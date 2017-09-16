@@ -1,0 +1,15 @@
+#maxhotkeysperinterval 100000
+#UseHook
+
+useSkillChain(){
+	SetKeyDelay -1,33,-1
+	send ^v
+	send {right}
+}
+
+
+2::useSkillChain()
+
+
+home::suspend, off
+end::suspend, on

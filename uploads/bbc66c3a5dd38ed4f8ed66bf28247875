@@ -1,0 +1,47 @@
+﻿SetMouseDelay, 1
+activeWindow(){
+	CoordMode, pixel, relative
+	WinGetPos, x, y, width, height, A
+	WinGet, pid, PID, A
+	
+	return pid
+}
+
+
+bot(pid){
+loop
+{
+CoordMode, pixel, screen
+PixelSearch xx, yy, 0, 0, 800, 600, 0x3142BD, 0, Fast
+	if ErrorLevel = 0
+	{
+		MouseGetPos, mx, my
+		WinGet, active_id, ID, A
+		BlockInput On
+		WinActivate, ahk_pid %pid%
+		sleep, 10
+		send {ctrl down}
+		click %xx%, %yy%
+		click %xx%, %yy%
+		send {ctrl up}
+		WinActivate, ahk_id %active_id%
+		MouseMove, %mx%, %my%
+		BlockInput Off
+		sleep, 2000
+	}
+	else 
+	{
+	Random, rand, 1, 30
+		if(rand == 1)
+		{
+			ControlSend, , {f7}, ahk_pid %pid%
+			ControlSend, , {r}, ahk_pid %pid%
+		}
+		ControlSend, , {2}, ahk_pid %pid%
+		sleep, 1000
+	}
+}
+}
+
+f1::bot(activeWindow())
+'::pause
