@@ -1,0 +1,123 @@
+SetMouseDelay, 1
+activeWindow(){
+	CoordMode, pixel, relative
+	WinGetPos, x, y, width, height, A
+	WinGet, pid, PID, A
+	
+	return pid
+}
+
+CoordMode, pixel, relative
+WinGetPos, x, y, width, height, A
+WinGet, pid, PID, A
+
+global pID = %pid%
+
+global coords := {}
+coords.Portal := "Q"
+coords.Duel := "W"
+coords.ConnError := "E"
+coords.Text := "W"
+coords.Ok := "T"
+coords.OkMiddle := "Y"
+
+global colorTest := {}
+colorTest.Portal := [257, 897, "0x0BA7F4"]
+colorTest.World := [415, 656, "0x5E534A"]
+colorTest.ConnError := [76, 565, "0x040466"]
+colorTest.Text := [48, 947, "0xFFFFFF"]
+colorTest.CharDuel := [242, 892, "0x1AC1FB"]
+colorTest.DuelEnd := [515,822, "0x014D1F"]
+colorTest.Next := [376, 985, "0x923909"]
+colorTest.OkMiddle := [55, 520, "0xFFFFFF"]
+colorTest.onDuel := [268,163, "0x222222"]
+
+CoordMode, pixel, relative
+
+isIn(place){
+	CoordMode, pixel, relative
+	loop
+	{
+		checkPopUp(colorTest.ConnError,coords.ConnError)
+		checkPopUp(colorTest.OkMiddle,coords.OkMiddle)
+		PixelSearch xx, yy, % place[1], place[2], place[1], place[2], place[3], "0", "Fast"
+		if ErrorLevel = 0
+		{
+			sleep, 10
+			return true
+		}
+		return
+	}
+}
+
+checkPopUp(place,coords){
+	PixelSearch xx, yy, % place[1], place[2], place[1], place[2], place[3], "0", "Fast"
+	if ErrorLevel = 0
+	{
+		sleep, 10
+		clickSpam(coords)
+	}
+	sleep, 10
+}
+
+clickSpam(coord){
+	ControlSend, , {%coord%}, ahk_pid %pID%
+	sleep, 20
+	ControlSend, , {%coord%}, ahk_pid %pID%
+}
+
+onDuel(){
+	if(isIn(colorTest.onDuel)){
+		loop 3
+		{
+			Send {Space}
+			sleep, 50
+		}	
+	}	
+}
+
+startingDuel(){
+	if(isIn(colorTest.Text)){
+		clickSpam(coords.Text)
+	}
+	if(isIn(colorTest.CharDuel)){
+		clickSpam(coords.Duel)
+	}
+	if(isIn(colorTest.DuelEnd)){
+	clickSpam(coords.Ok)
+	}
+	if(isIn(colorTest.Next)){
+		clickSpam(coords.Ok)
+	}
+	;onDuel()
+}
+
+Portal(){
+	CoordMode, pixel, relative
+	activeWindow()
+	loop
+	{
+		if(isIn(colorTest.World)){
+			clickSpam(coords.Portal)
+		}
+		if(isIn(colorTest.Portal)){
+			clickSpam(coords.Duel)
+		}
+		startingDuel()
+	}
+}
+
+Street(){
+	CoordMode, pixel, relative
+	activeWindow()
+	loop
+	{
+		startingDuel()
+	}
+}
+
+
+1::Portal()
+2::Street()
+5::reload
+'::pause
